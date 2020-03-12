@@ -1,6 +1,7 @@
 import enum
+import random
 
-from aipur.types import Goods
+from aipur.types import Goods, BonusTiles
 
 
 class MoveType(enum.Enum):
@@ -76,8 +77,46 @@ class Discard(Move):
         self.count = count  # number of goods to sell
 
     def apply(self, game_state, player_state):
+        goods_bonus_plates = game_state.goods_bonus_plates[self.good_type]
+        received_bonus_plates = []
+        bonus_plates_empty = False
         for i in range(self.count):
             player_state.hand.remove(self.good_type)
+            if goods_bonus_plates:
+                value = goods_bonus_plates.pop(0)
+                player_state.gold += value
+                received_bonus_plates.append(value)
+            else:
+                bonus_plates_empty = True
+
+        if len(received_bonus_plates) > 1:
+            gold_string = '+'.join([str(p) for p in received_bonus_plates]) + f'={sum(received_bonus_plates)}'
+        elif len(received_bonus_plates) == 1:
+            gold_string = str(received_bonus_plates[0])
+
+        if received_bonus_plates:
+            print(f'Player {player_state.player} received {gold_string} gold for selling.')
+        if bonus_plates_empty:
+            print(f'No more gold received for selling {self.good_type} (bonus tiles are empty).')
+
+        if self.count == 3 and game_state.bonus_tiles[BonusTiles.Three]:
+            tile = random.choice(game_state.bonus_tiles[BonusTiles.Three])
+            game_state.bonus_tiles[BonusTiles.Three].remove(tile)
+            print(f'Player {player_state.player} receives a bonus tile worth ' +
+                  f'{tile} gold for selling three goods.')
+            player_state.gold += tile
+        elif self.count == 4 and game_state.bonus_tiles[BonusTiles.Four]:
+            tile = random.choice(game_state.bonus_tiles[BonusTiles.Four])
+            game_state.bonus_tiles[BonusTiles.Four].remove(tile)
+            print(f'Player {player_state.player} receives a bonus tile worth ' +
+                  f'{tile} gold for selling four goods.')
+            player_state.gold += tile
+        elif self.count == 5 and game_state.bonus_tiles[BonusTiles.Five]:
+            tile = random.choice(game_state.bonus_tiles[BonusTiles.Five])
+            game_state.bonus_tiles[BonusTiles.Five].remove(tile)
+            print(f'Player {player_state.player} receives a bonus tile worth ' +
+                  f'{tile} gold for selling five goods.')
+            player_state.gold += tile
 
     def __str__(self):
         sell = ' '.join(str(g) for g in [self.good_type] * self.count)

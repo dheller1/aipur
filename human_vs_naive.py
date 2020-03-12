@@ -43,6 +43,20 @@ def main():
         print()
         # time.sleep(0.3)
 
+    print('Game end.')
+    print('Score:')
+    alex_gold = game.player_states[Player.Alex].gold
+    bill_gold = game.player_states[Player.Bill].gold
+    print(f'{Player.Alex}: {alex_gold} gold')
+    print(f'{Player.Bill}: {bill_gold} gold')
+
+    if alex_gold > bill_gold:
+        print(f'{Player.Alex} wins!')
+    elif bill_gold > alex_gold:
+        print(f'{Player.Bill} wins!')
+    else:
+        print(f"It's a draw!")
+
 
 if __name__ == '__main__':
     main()

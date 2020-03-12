@@ -10,6 +10,7 @@ class PlayerState:
         self.hand = []
         self.paddock = []
         self.add_cards(cards)
+        self.gold = 0
 
     def add_card(self, card):
         if card == Goods.Camel:
