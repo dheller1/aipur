@@ -63,6 +63,7 @@ class DrawMultiple(Move):
             else:
                 player_state.paddock.pop()
                 player_state.add_card(game_state.market.pop(i1))
+                game_state.market.append(Goods.Camel)
 
     def __str__(self):
         draw = ', '.join([str(d) for d in self.draw])
