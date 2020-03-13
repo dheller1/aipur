@@ -71,7 +71,7 @@ class DrawMultiple(Move):
         return f'Draw multiple: {draw}, put back {put}'
 
 
-class Discard(Move):
+class SellGoods(Move):
     def __init__(self, good_type, count):
         super().__init__(MoveType.Discard)
         self.good_type = good_type  # type of good to sell
@@ -121,7 +121,7 @@ class Discard(Move):
 
     def __str__(self):
         sell = ' '.join(str(g) for g in [self.good_type] * self.count)
-        return f'Discard goods: {sell}'
+        return f'Sell goods: {sell}'
 
 
 def is_valid_movetype(movetype, game_state, player_state):

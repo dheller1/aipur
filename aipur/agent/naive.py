@@ -1,7 +1,7 @@
 import random
 
 from aipur.agent.base import Agent
-from aipur.moves import Move, MoveType, is_valid_movetype, DrawSingle, DrawAllCamels, Discard, DrawMultiple
+from aipur.moves import Move, MoveType, is_valid_movetype, DrawSingle, DrawAllCamels, SellGoods, DrawMultiple
 from aipur.types import Goods
 
 
@@ -26,7 +26,7 @@ class RandomBot(Agent):
             sell_good = random.choice(list(sellable.keys()))
             sell_min = 2 if sell_good not in [Goods.Leather, Goods.Spices, Goods.Cloth] else 1
             sell_count = random.randint(sell_min, sellable[sell_good])
-            return Discard(sell_good, sell_count)
+            return SellGoods(sell_good, sell_count)
         elif chosen_move_type == MoveType.DrawMultiple:
             max_draw = len(_without_camels(game_state.market))
             max_replace = len(player_state.hand) + len(player_state.paddock)
