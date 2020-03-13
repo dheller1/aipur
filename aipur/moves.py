@@ -12,7 +12,7 @@ class MoveType(enum.Enum):
 
 
 class Move:
-    def __init__(self, typ):
+    def __init__(self, typ, discard=None):
         self.typ = typ
 
     def apply(self, game_state, player_state):
@@ -130,7 +130,10 @@ def is_valid_movetype(movetype, game_state, player_state):
     elif movetype == MoveType.DrawSingle:
         return any(filter(lambda g: g != Goods.Camel, game_state.market))
     elif movetype == MoveType.DrawMultiple:
-        return len(player_state.hand) > 0 and any(filter(lambda g: g != Goods.Camel, game_state.market))
+        # need at least two goods and/or camels to trade, and at least two goods
+        # in the market
+        return (len(player_state.hand) + len(player_state.paddock) >= 2
+                and len(list(filter(lambda g: g != Goods.Camel, game_state.market))) >= 2)
     elif movetype == MoveType.DrawAllCamels:
         return game_state.market.count(Goods.Camel) > 0
     elif movetype == MoveType.Discard:

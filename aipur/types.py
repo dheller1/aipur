@@ -38,6 +38,7 @@ class Goods(enum.Enum):
         elif self == Goods.Camel:
             return colorama.Fore.YELLOW + 'Cam' + colorama.Style.RESET_ALL
 
+
 class BonusTiles(enum.Enum):
     Three = 3
     Four = 4

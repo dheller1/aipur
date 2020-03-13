@@ -31,7 +31,7 @@ class RandomBot(Agent):
             max_draw = len(_without_camels(game_state.market))
             max_replace = len(player_state.hand) + len(player_state.paddock)
             max_total = min(max_draw, max_replace)
-            how_many = random.randint(1, max_total) if max_total > 1 else 1
+            how_many = random.randint(2, max_total) if max_total > 2 else 2
             to_draw = random.sample(_without_camels(game_state.market), k=how_many)
             to_replace = random.sample(player_state.hand + player_state.paddock, k=how_many)
             return DrawMultiple(to_draw, to_replace)
