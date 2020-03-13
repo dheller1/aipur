@@ -8,28 +8,34 @@ class MoveType(enum.Enum):
     DrawSingle = 1
     DrawMultiple = 2
     DrawAllCamels = 3
-    Discard = 4
+    SellGoods = 4
 
 
 class Move:
     def __init__(self, typ, discard=None):
+        """ :param discard: List of cards to discard after the move to fulfill the hand limit, or None. """
         self.typ = typ
+        self.discard = discard
 
     def apply(self, game_state, player_state):
-        raise NotImplementedError()
+        if self.discard:
+            for c in self.discard:
+                player_state.hand.remove(c)
 
 
 class DrawSingle(Move):
-    def __init__(self, draw):
-        super().__init__(MoveType.DrawSingle)
+    def __init__(self, draw, discard=None):
+        super().__init__(MoveType.DrawSingle, discard)
         self.draw = draw
 
     def apply(self, game_state, player_state):
         card = game_state.market.pop(game_state.market.index(self.draw))
         player_state.add_card(card)
+        super().apply(game_state, player_state)
 
     def __str__(self):
-        return f'Draw single: {self.draw}'
+        discard = f', discard {self.discard}' if self.discard else ''
+        return f'Draw single: {self.draw}' + discard
 
 
 class DrawAllCamels(Move):
@@ -46,8 +52,8 @@ class DrawAllCamels(Move):
 
 
 class DrawMultiple(Move):
-    def __init__(self, draw, replace):
-        super().__init__(MoveType.DrawMultiple)
+    def __init__(self, draw, replace, discard=None):
+        super().__init__(MoveType.DrawMultiple, discard)
         assert len(draw) == len(replace)
         self.draw = draw  # cards to draw from market to hand
         self.replace = replace  # cards to replace from hand into market
@@ -64,16 +70,19 @@ class DrawMultiple(Move):
                 player_state.paddock.pop()
                 player_state.add_card(game_state.market.pop(i1))
                 game_state.market.append(Goods.Camel)
+        super().apply(game_state, player_state)
 
     def __str__(self):
         draw = ', '.join([str(d) for d in self.draw])
         put = ', '.join([str(r) for r in self.replace])
-        return f'Draw multiple: {draw}, put back {put}'
+        discard = ', '.join([str(d) for d in self.discard]) if self.discard else ''
+        discard_s = f', discard {discard}' if discard else ''
+        return f'Draw multiple: {draw}, put back {put}' + discard_s
 
 
 class SellGoods(Move):
     def __init__(self, good_type, count):
-        super().__init__(MoveType.Discard)
+        super().__init__(MoveType.SellGoods)
         self.good_type = good_type  # type of good to sell
         self.count = count  # number of goods to sell
 
@@ -136,7 +145,7 @@ def is_valid_movetype(movetype, game_state, player_state):
                 and len(list(filter(lambda g: g != Goods.Camel, game_state.market))) >= 2)
     elif movetype == MoveType.DrawAllCamels:
         return game_state.market.count(Goods.Camel) > 0
-    elif movetype == MoveType.Discard:
+    elif movetype == MoveType.SellGoods:
         hand = player_state.hand
         return (Goods.Leather in hand or Goods.Spices in hand or Goods.Cloth in hand
                 or hand.count(Goods.Silver) >= 2 or hand.count(Goods.Gold) >= 2

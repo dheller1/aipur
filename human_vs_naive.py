@@ -40,6 +40,7 @@ def main():
 
         print('Move - ' + str(move))
         game.apply_move(move)
+        assert len(game.player_states[game.current_player].hand) <= 7
         print()
         # time.sleep(0.3)
 
