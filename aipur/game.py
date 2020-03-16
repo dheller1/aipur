@@ -24,14 +24,15 @@ class PlayerState:
 
 
 class GameState:
-    def __init__(self, goods_bonus_plates, bonus_tiles, draw_pile, players):
+    def __init__(self, goods_bonus_plates, bonus_tiles, draw_pile, players, silent=False):
         self.goods_bonus_plates = goods_bonus_plates
         self.bonus_tiles = bonus_tiles
         self.draw_pile = draw_pile
         self.market = [Goods.Camel] * 3
         self.player_states = {p: PlayerState(p, self.draw(5)) for p in players}
-        self.current_player = random.choice(players)
+        self.current_player = Player.Alex  # random.choice(players)
         self.market.extend(self.draw(2))
+        self.silent = silent
 
     @classmethod
     def new_game(cls):
